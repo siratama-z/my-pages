@@ -30,6 +30,9 @@ input {
 	text-align: right;
 	margin: 0px 5px;
 }
+input.box {
+	width: 80px;
+}
 -->
 </style>
 <script type="text/javascript">
@@ -139,12 +142,12 @@ input {
 <div>
 <form name="formSimurate">
 	<table>
-	<tr><td>総アイコン数：</td><td><input type="number" name="m" placeholder="例）500" style="width:80px;">個</td></tr>
-	<tr><td>曲の長さ：</td><td><input type="number" name="l" placeholder="例）120" style="width:80px;">秒</td></tr>
-	<tr><td>発動機会間隔：</td><td><input type="number" name="r" placeholder="例）21" style="width:80px;">個ごとに</td></tr>
-	<tr><td>発動確率：</td><td><input type="number" name="p" placeholder="例）59" style="width:80px;">%の確率で</td></tr>
-	<tr><td>効果時間：</td><td><input type="number" name="t" placeholder="例）5.5" style="width:80px;">秒</td></tr>
-	<tr><td>試行回数：</td><td><input type="number" name="N" value="1000" style="width:80px;">回</td></tr>
+	<tr><td>総アイコン数：</td><td><input type="number" name="m" placeholder="例）500" class="box">個</td></tr>
+	<tr><td>曲の長さ：</td><td><input type="number" name="l" placeholder="例）120" class="box">秒</td></tr>
+	<tr><td>発動機会間隔：</td><td><input type="number" name="r" placeholder="例）21" class="box">個ごとに</td></tr>
+	<tr><td>発動確率：</td><td><input type="number" name="p" placeholder="例）59" class="box">%の確率で</td></tr>
+	<tr><td>効果時間：</td><td><input type="number" name="t" placeholder="例）5.5" class="box">秒</td></tr>
+	<tr><td>試行回数：</td><td><input type="number" name="N" value="1000" class="box">回</td></tr>
 	</table>
 	<input type="button" value="計算する" onClick="calcAndPrint();">
 </form>
