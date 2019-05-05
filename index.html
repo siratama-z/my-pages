@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>スクフェス 特技によるアイコンカバー率の計算ツール（パターンC対応）</title>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="author" content="siratama_z">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style type="text/css">
+<!--
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+	margin: 20px;
+}
+div {
+	margin: 20px;
+}
+div.message {
+	margin: 0px 20px;
+}
+form {
+	margin: 20px;
+}
+table {
+	margin: 20px;
+}
+input {
+	text-align: right;
+	margin: 0px 5px;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+	function simulate(m, l, r, p, t) {
+		var total = 0;
+		var d = l / m;//曲中の1アイコンあたりの秒数（アイコンが等間隔に並んでいると仮定）
+		var remaining = 0;//効果を受ける残りアイコン数（remaining > 0 ⇔ 効果時間中。最初は特技発動しないので初期値は0）
+		var next = 0;//0:待機中の特技はない 1:待機中の特技がある（⇒効果時間中に抽選は行われない） -1:待機中の特技はないが、抽選も行われない（既に1回行われた状態）
+		//1アイコン目から最後のアイコンまでを計算する
+		for (var i = 1 ; i <= m ; i++) {
+			// 発動機会
+			if (i % r == 0) {
+				// 効果時間中の抽選がまだ行われていない場合に抽選を行う
+				if (next == 0) {
+					// 発動判定
+					if (p > Math.random()) {
+						if (remaining == 0) {
+							remaining =  Math.floor(t / d);//現在効果時間でない場合は、特技を発動して残りアイコン数をセットする
+						} else {
+							next = 1;//現在効果時間中の場合は、特技を待機状態とする。残りアイコン数が0になると発動する
+						}
+					} else {
+						if (remaining > 0) {
+							next = -1;// 効果時間中に特技が発動しなかった場合、効果時間中は発動機会が失われる
+						}
+					}
+				}
+			}
+			
+			// 効果適用
+			if (remaining > 0) {
+				// 残りカウント数が0でなければ、このアイコンに対して効果を適用する
+				total += 1;
+				remaining -= 1;
+				if (remaining == 0) {
+					if (next == 1) {
+						remaining = Math.floor(t / d);//効果適用後に残りアイコン数が0になった場合、待機中の特技があれば特技を発動させる
+					}
+					next = 0;//待機の特技があってもなくても、一度効果が切れたので再び抽選可能な状態とする
+				}
+			}
+		}
+		return total;
+	}
+	
+	function nSimulate(N, m, l, r, p, t) {
+		var total = [];
+		var sum = 0;
+		var avg = 0;//平均
+		var va = 0;//分散
+		
+		// N回シミュレートする
+		for (var i = 0; i < N; i++) {
+			total[i] = simulate(m, l, r, p, t);
+			sum += total[i];
+		}
+		
+		avg = Math.floor(sum / N);
+		
+		// 分散算出
+		for (var i = 0; i < N; i++) {
+			va += (total[i] - avg)*(total[i] - avg);
+		}
+		va = Math.floor(va / N);
+		
+		return [avg,va];
+	}
+	
+	function calcAndPrint() {
+		
+		var N = formSimurate.N.value;
+		var m = formSimurate.m.value;
+		var l = formSimurate.l.value;
+		var r = formSimurate.r.value;
+		var p = formSimurate.p.value / 100;
+		var t = formSimurate.t.value;
+		
+		if (isNaN(N) || isNaN(m) || isNaN(l) || isNaN(r) || isNaN(p) || isNaN(t) || N <= 0 || m <= 0 || l <= 0 || r <= 0 || p <= 0 || t <= 0) {
+			window.alert("正しい数値を入力して下さい。");
+			return;
+		}
+		
+		if (N > 10000) {
+			N = 10000;
+		}
+		
+		var result = [];
+		var avg = 0;
+		var va = 0;
+		result = nSimulate(N, m, l, r, p, t);
+		avg = result[0];
+		va = result[1];
+		std = Math.floor(Math.sqrt(va));
+		cover = Math.floor(avg * 1000 / m) / 10;
+		
+		window.alert("効果が適用されるアイコン数の期待値：" + avg + "\nアイコンカバー率：" + cover + "%（" + avg + "/" + m +"）\n分散：" + va + "\n標準偏差（σ）：" + std);
+	}
+-->
+</script>
+</head>
+<body>
+<h2>スクフェス 特技によるアイコンカバー率の計算ツール（パターンC対応）</h2>
+<div>判定強化やPERFECTスコアアップ等の、効果時間が定められている特技において、どれくらいのアイコンが効果を受けるのかをシミュレートします。<br>
+（タイマー系は対応していません）<br>
+各入力ボックスに数値を入力して「計算する」ボタンを押してください。</div>
+<div>
+<form name="formSimurate">
+	<table>
+	<tr><td>総アイコン数：</td><td><input type="number" name="m" placeholder="例）500" size="5">個</td></tr>
+	<tr><td>曲の長さ：</td><td><input type="number" name="l" size="5" placeholder="例）120">秒</td></tr>
+	<tr><td>発動機会間隔：</td><td><input type="number" name="r" size="5" placeholder="例）21">個ごとに</td></tr>
+	<tr><td>発動確率：</td><td><input type="number" name="p" size="5" placeholder="例）59">%の確率で</td></tr>
+	<tr><td>効果時間：</td><td><input type="number" name="t" size="5" placeholder="例）5.5">秒</td></tr>
+	<tr><td>試行回数：</td><td><input type="number" name="N" value="1000" size="5">回</td></tr>
+	</table>
+	<input type="button" value="計算する" onClick="calcAndPrint();">
+</form>
+</div>
+<hr>
+<div>
+免責事項：
+<div class="message">
+このツールを用いて得られた結果の正確性について一切の責任を負いません。<br>
+このツールを用いて得られた損害についても一切の責任を負いません。
+</div>
+</div>
+<div>
+要するに：
+<div class="message">
+結果が間違っていても許して下さい。（実際他サイト様と異なる値が出力されます）<br>
+計算処理はブラウザ（端末側）で行うため、端末に負荷がかかります。<br>
+簡易的なシミュレーションを行う場合に参考程度に使えるかもしれません。
+</div>
+</div>
+<div>
+結果について：
+<div class="message">
+ゆるい解釈としては「効果が適用されるアイコン数の期待値±標準偏差」の幅で割とばらつく、と言えます。<br>
+実際は曲によってアイコン密度が異なるため、あくまで参考程度の情報として解釈していただければと思います。
+</div>
+</div>
+<hr>
+<div>
+参考にさせていただいたサイト様：
+<div class="message">
+
+</div>
+</div>
+<hr>
+<div>
+作成者：<a href="https://twitter.com/siratama_z" target="_blank">@siratma_z</a>
+</div>
+</body>
+</html>
