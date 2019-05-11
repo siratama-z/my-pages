@@ -46,11 +46,15 @@ input.box {
 		var remaining = 0;//効果を受ける残りアイコン数（remaining > 0 ⇔ 効果時間中。最初は特技発動しないので初期値は0）
 		var remainingMax = Math.ceil(t * m / l);//特技発動により効果を受ける最大のアイコン数（曲の終わりでなければこのアイコン数が保障される）
 		var status = 0;//0:特技未発動 1:特技発動中
+		var reserved = 0;//0:特技予約なし 1:特技予約あり（特技発動中に発動機会を通過した）
 		//1アイコン目から最後のアイコンまでを計算する
 		var i = 1;
 		while (i <= m) {
+			if (i % r == 0 && remaining > 0) {
+				reserved = 1;//効果時間中に発動機会を追加した場合、効果時間が切れた時に抽選を行うための予約を行う
+			}
 			// 発動機会はリズムアイコンの倍数または特技発動中で、残りアイコン数が0のとき
-			if ((i % r == 0 || status == 1) && remaining == 0) {
+			if ((i % r == 0 || (status == 1 && reserved == 1)) && remaining == 0) {
 				// 発動判定
 				if (p > Math.random()) {
 					remaining = remainingMax;//特技を発動して残りアイコン数をセットする
@@ -58,6 +62,7 @@ input.box {
 				} else {
 					status = 0;//特技未発動（status=1の場合に0に戻す意味がある）
 				}
+				reserved = 0;//特技が発動してもしなくても抽選権を失ったため予約を取り消す
 			}
 			
 			// 効果適用
@@ -164,7 +169,7 @@ input.box {
 <div>
 要するに：
 <div class="message">
-結果が間違っていても許して下さい。（実際他サイト様と異なる値が出力されます。<font color="red">（2019/5/10 不具合があったため修正しました）</font>）<br>
+結果が間違っていても許して下さい。（実際他サイト様と異なる値が出力されます。<font color="red">（2019/5/11 不具合があったため修正しました）</font>）<br>
 計算処理はブラウザ（端末側）で行うため、端末に負荷がかかります。<br>
 簡易的なシミュレーションを行う場合に参考程度に使えるかもしれません。
 </div>
@@ -181,14 +186,17 @@ input.box {
 <div>
 参考にさせていただいたサイト様：
 <div class="message">
-
+<blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">マニアックですが超重要なネタです。高レベルのCOMBO FEVERを使うと画像のような状況が起きます。この場合、最も確からしい挙動はA〜Cのどれだと思いますか？実機のスコアと比較した結果、最も近いのはCでした。SIF Matchは現在Bなので、近い内にCに変更しようと思います。Aで計算すると壊れます😇 <a href="https://t.co/oIL0mTvIbJ">pic.twitter.com/oIL0mTvIbJ</a></p>&mdash; 浦の星女学院パソコン部 (@devsifmatch) <a href="https://twitter.com/devsifmatch/status/1120373005551407105?ref_src=twsrc%5Etfw">2019年4月23日</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">おくーやさんがブログを更新しました。<br><br>今話題の判定強化の発動に関する仕様と、簡単な判定URの性能比較について書きました。<a href="https://t.co/D12WJhKZXc">https://t.co/D12WJhKZXc</a></p>&mdash; おくーや (@Octilleryo) <a href="https://twitter.com/Octilleryo/status/1123513256545382400?ref_src=twsrc%5Etfw">2019年5月1日</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </div>
 </div>
 <hr>
 <div>
 作成日：2019/5/5<br>
 作成者：<a href="https://twitter.com/siratama_z" target="_blank">@siratma_z</a><br>
-最終更新日：2019/5/10
+最終更新日：2019/5/11
 </div>
 </body>
 </html>
