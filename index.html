@@ -47,6 +47,10 @@ input.box {
 		var remainingMax = Math.ceil(t * m / l);//特技発動により効果を受ける最大のアイコン数（曲の終わりでなければこのアイコン数が保障される）
 		var status = 0;//0:特技未発動 1:特技発動中
 		var reserved = 0;//0:特技予約なし 1:特技予約あり（特技発動中に発動機会を通過した）
+		var doubleTrig = 0;//効果を受けるアイコン数が発動機会間隔の倍数になる場合でも、効果時間が次の発動機会間隔と重ならない場合は2回抽選を行う必要がある
+		if (remainingMax > r && remainingMax % r == 0 && Math.floor(t * m / l) == remainingMax - 1) {
+			doubleTrig = 1;//具体的にはr=20かつt*n/l=39.5のとき、remainingMax=40となるが2回目の発動機会までに効果時間は切れているので2回抽選を行う
+		}
 		//1アイコン目から最後のアイコンまでを計算する
 		var i = 1;
 		while (i <= m) {
@@ -58,6 +62,9 @@ input.box {
 				// 発動判定
 				if (p > Math.random()) {
 					remaining = remainingMax;//特技を発動して残りアイコン数をセットする
+					status = 1;//特技発動中
+				} else if (doubleTrig == 1 && i % r == 0 && status == 1 && reserved == 1 && p > Math.random()) {
+					remaining = remainingMax;//抽選が2回
 					status = 1;//特技発動中
 				} else {
 					status = 0;//特技未発動（status=1の場合に0に戻す意味がある）
@@ -169,7 +176,7 @@ input.box {
 <div>
 要するに：
 <div class="message">
-結果が間違っていても許して下さい。（実際他サイト様と異なる値が出力されます。<font color="red">（2019/5/11 不具合があったため修正しました）</font>）<br>
+結果が間違っていても許して下さい。（実際他サイト様と異なる値が出力されます。<font color="red">（2019/5/12 不具合があったため再度修正しました）</font>）<br>
 計算処理はブラウザ（端末側）で行うため、端末に負荷がかかります。<br>
 簡易的なシミュレーションを行う場合に参考程度に使えるかもしれません。
 </div>
@@ -196,7 +203,7 @@ input.box {
 <div>
 作成日：2019/5/5<br>
 作成者：<a href="https://twitter.com/siratama_z" target="_blank">@siratma_z</a><br>
-最終更新日：2019/5/11
+最終更新日：2019/5/12
 </div>
 </body>
 </html>
