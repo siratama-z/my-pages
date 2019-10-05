@@ -72,7 +72,7 @@ input.box {
 		} else if (z < 3000) {
 			coeffZokusei = 1.4 + z * 0.0001;//f(1400)=1.56, f(3000)=1.7
 		} else {
-			coeffZokusei = 1.7 + z * 0.00003;
+			coeffZokusei = 1.7 + (z - 3000) * 0.00007;
 		}
 		console.log("coeffZokusei");
 		console.log(coeffZokusei);
