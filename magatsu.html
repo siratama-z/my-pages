@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>まがつ　Aスキルダメージ計算（試作品）</title>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="author" content="siratama_z">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
+<style type="text/css">
+<!--
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+	margin: 15px;
+	font-size: 10;
+}
+div {
+	margin: 15px;
+}
+div.message {
+	margin: 0px 15px;
+}
+form {
+	margin: 15px 0px;
+}
+table {
+	margin: 15px 0px;
+}
+td {
+	padding: 10px 0px;
+}
+input {
+	text-align: right;
+	margin: 0px 5px;
+}
+input.box {
+	width: 80px;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+	function simulateAttackSkill(x, w, a, b, z, d, t) {
+		// x : 攻撃値（物攻or特攻）。ステータス画面に表示
+		// w : Aスキル武器の攻撃値。武器画面に表示
+		// a : Aスキル倍率。現状は100%～139%で3%刻み
+		// b : （仮）ジョブパッシブ効果
+		// z : 属性攻撃値（無属性の場合は0）。ステータス画面に表示
+		// d : ダメージブースト効果の総和（※Aスキルダメージブーストを除く。例えばルクス装備で15%、ルクスとパーシ銃で17%、ルクスとパーシ銃とファラリスコアで27%）
+		// t : Aスキルダメージブーストの効果
+		var attack = 0;
+		var coeffAttack = 1;//攻撃値による減衰補正。攻撃値20kまでは1だが、だんだん下がる
+		
+		// 最終攻撃値の算出（減衰補正）
+		attack = x * (1 + b / 100);//ジョブパッシブの特攻ブースト等はここにかかる？（暫定）
+		if (x > 20000) {
+			coeffAttack = (1 - 8 * (attack / 10000 - 2) * (attack / 10000 - 2) / 100);//減衰補正の算出
+			attack = attack * coeffAttack;
+		}
+		console.log("coeffAttack");
+		console.log(coeffAttack);
+		console.log("attack");
+		console.log(attack);
+		
+		// 攻撃属性値による補正
+		var coeffZokusei = 1;
+		if (z < 700) {
+			coeffZokusei = 1 + z * 0.00045;//f(700) = 1.315
+		} else if (z < 1400) {
+			coeffZokusei = -13/7000/7000 * z * z + 0.615 / 700 * z + 0.83;//仮
+		} else if (z < 3000) {
+			coeffZokusei = 1.4 + z * 0.0001;//f(1400)=1.56, f(3000)=1.7
+		} else {
+			coeffZokusei = 1.7 + z * 0.00003;
+		}
+		console.log("coeffZokusei");
+		console.log(coeffZokusei);
+		
+		var damage = 0;
+		damage = Math.floor((attack + w) * coeffZokusei * a / 100 * (1 + d / 100) * (1 + t / 100) * 1.005);//1.005はまがつくん補正…説明できないが誤差が小さくなる
+		
+		window.alert("攻撃値：" + x + "\nAスキル武器攻撃値：" + w + "\nAスキル倍率：" + a + "%\n属性攻撃：" + z + "\nダメージブースト効果：" + d +"%\nAスキルダメージブースト効果：" + t + "%\n\nのとき、Aスキルでまがつくんを殴ったときのダメージ予想は…\n\n" + damage + "（中央値、±1%の幅あり）");
+	}
+	
+	
+	function calcAndPrint() {
+		
+		var x = Number(formSimurate.x.value);
+		var w = Number(formSimurate.w.value);
+		var a = Number(formSimurate.a.value);
+		var b = Number(formSimurate.b.value);
+		var z = Number(formSimurate.z.value);
+		var d = Number(formSimurate.d.value);
+		var t = Number(formSimurate.t.value);
+		
+		if (isNaN(x) || isNaN(w) || isNaN(a) || isNaN(b) || isNaN(z) || isNaN(d) || isNaN(t) || x <= 0 || w <= 0 || a < 100 || a > 139 || b < 0 || z < 0 || d < 0 || t < 0 ) {
+			window.alert("正しい数値を入力して下さい。");
+			return;
+		}
+		
+		simulateAttackSkill(x, w, a, b, z, d, t);
+		
+	}
+-->
+</script>
+</head>
+<body>
+<h2>まがつ Aスキルダメージ計算（試作品）</h2>
+<div>まがつくんかかしをAスキルで殴ったときのダメージ予測を行います。ジョブパッシブはまだ考慮できていないため、特にウォリ系やウィズ系の計算は不正確です。</div>
+<div>
+<form name="formSimurate">
+	<table>
+	<tr><td>攻撃値：</td>                        <td></td> <td><input type="number" name="x" placeholder="例）15000" class="box"></td> <td>　　　ステータス画面の数値</td></tr>
+	<tr><td>Aスキル武器攻撃値：</td>             <td></td> <td><input type="number" name="w" placeholder="例）1000" class="box"></td>  <td>　　　武器の数値</td></tr>
+	<tr><td>Aスキル倍率：</td>                   <td></td> <td><input type="number" name="a" placeholder="例）139" class="box">%</td>  <td>　　　武器の数値</td></tr>
+	<tr><td>ジョブパッシブ攻撃ブースト効果：</td><td>+</td><td><input type="number" name="b" value="0" class="box">%</td>              <td>　　　※暫定。ジョブパッシブの物攻ブースト、特攻ブースト、ブックマスタリー等の効果値の和<br>　　　（例えばウィザードは3%）</td></tr>
+	<tr><td>属性攻撃：</td>                      <td></td> <td><input type="number" name="z" placeholder="例）500" class="box"></td>   <td>　　　ステータス画面の数値（Aスキルの属性に対応させる）</td></tr>
+	<tr><td>ダメージブースト効果：</td>          <td>+</td><td><input type="number" name="d" placeholder="例）15" class="box">%</td>   <td>　　　ルクス、オールダメージブースト、属性ダメージブースト、キラー系の効果値の総和<br>　　　（例えばルクスとファラリスコアで25%）</td></tr>
+	<tr><td>Aスキルダメージブースト効果：</td>   <td>+</td><td><input type="number" name="t" placeholder="例）20" class="box">%</td>   <td>　　　特式頭用。ジョブパッシブは未検証</td></tr>
+	</table>
+	<input type="button" value="計算する" onClick="calcAndPrint();">
+</form>
+</div>
+<hr>
+<div>
+作成日：2019/10/5<br>
+作成者：<a href="https://twitter.com/siratama_z" target="_blank">@siratma_z</a><br>
+最終更新日：2019/10/5
+</div>
+</body>
+</html>
