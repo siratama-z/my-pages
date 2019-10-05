@@ -55,7 +55,7 @@ input.box {
 		// 最終攻撃値の算出（減衰補正）
 		attack = x * (1 + b / 100);//ジョブパッシブの特攻ブースト等はここにかかる？（暫定）
 		if (x > 20000) {
-			coeffAttack = (1 - 8 * (attack / 10000 - 2) * (attack / 10000 - 2) / 100);//減衰補正の算出
+			coeffAttack = (1 - 7 * (x / 10000 - 2) * (x / 10000 - 2) / 100);//減衰補正の算出（減衰してからジョブブーストがかかる方が誤差が小さい）
 			attack = attack * coeffAttack;
 		}
 		console.log("coeffAttack");
@@ -78,7 +78,7 @@ input.box {
 		console.log(coeffZokusei);
 		
 		var damage = 0;
-		damage = Math.floor((attack + w) * coeffZokusei * a / 100 * (1 + d / 100) * (1 + t / 100) * 1.005);//1.005はまがつくん補正…説明できないが誤差が小さくなる
+		damage = Math.floor((attack + w) * coeffZokusei * a / 100 * (1 + d / 100) * (1 + t / 100));
 		
 		window.alert("攻撃値：" + x + "\nAスキル武器攻撃値：" + w + "\nAスキル倍率：" + a + "%\n属性攻撃：" + z + "\nダメージブースト効果：" + d +"%\nAスキルダメージブースト効果：" + t + "%\n\nのとき、Aスキルでまがつくんを殴ったときのダメージ予想は…\n\n" + damage + "（中央値、±1%の幅あり）");
 	}
@@ -121,6 +121,14 @@ input.box {
 	</table>
 	<input type="button" value="計算する" onClick="calcAndPrint();">
 </form>
+</div>
+<hr>
+<div>
+【更新履歴】<br>
+2019/10/5 初版<br>
+2019/10/5 攻撃値の減衰補正を緩やかになるように修正（攻撃値30000で誤差が大きくなったため）
+2019/10/5 まがつくん用の補正を除去（攻撃値が高くなると誤差が大きくなったため）
+2019/10/5 ジョブブースト効果のかかる位置を変更（ブーストしてから減衰ではなく、減衰してからブーストした）
 </div>
 <hr>
 <div>
